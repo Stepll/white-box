@@ -11,6 +11,44 @@ namespace XUnitTestProject1
         private static string _password = "password";
         private static uint _modAdler32 = 1;
         private static uint _modAdler32_2 = 2;
+
+        [Fact]
+        public void InitEqualCheck()
+        {
+            string hashed_1 = PasswordHasher.GetHash(_password);
+            PasswordHasher.Init("", 0);
+            string hashed_2 = PasswordHasher.GetHash(_password);
+            Assert.Equal(hashed_1, hashed_2);
+
+        }
+
+        [Fact]
+        public void InitNotEqualCheck()
+        {
+            string hashed_1 = PasswordHasher.GetHash(_password);
+            PasswordHasher.Init(_salt, _modAdler32);
+            string hashed_2 = PasswordHasher.GetHash(_password);
+            Assert.NotEqual(hashed_1, hashed_2);
+
+        }
+
+        [Fact]
+        public void PasswordHasherSaltCheck()
+        {
+            string hashed_1 = PasswordHasher.GetHash(_password, _salt);
+            string hashed_2 = PasswordHasher.GetHash(_password, _salt);
+            Assert.Equal(hashed_1, hashed_2);
+        }
+
+        [Fact]
+        public void PasswordHasherSaltNotEqualCheck()
+        {
+            string pass = "password";
+            string hashed_1 = PasswordHasher.GetHash(pass, _salt);
+            string hashed_2 = PasswordHasher.GetHash(pass, _salt2);
+            Assert.NotEqual(hashed_1, hashed_2);
+        }
+
         [Fact]
         private void TestNotNull()
         {
@@ -23,30 +61,7 @@ namespace XUnitTestProject1
             var expected = PasswordHasher.GetHash(_password, _salt, _modAdler32);
             Assert.Equal(PasswordHasher.GetHash(_password), expected);
         }
-        
-        [Fact]
-        private void TestInit()
-        {
-            PasswordHasher.Init(_salt, _modAdler32);
-            Assert.Equal(PasswordHasher.GetHash(_password), "39F5A9915E7D0BF4514A6B0E23EFCC730996979430205EF1B17869DCD65B4C8E");
-            PasswordHasher.Init(_salt2, _modAdler32_2);
-            Assert.Equal(PasswordHasher.GetHash(_password), "0250B9D09E6F22727941B405816DC43E7B0FD7743E6A412693EA44D56E7DC33C");
-        }
 
-        [Fact]
-        public void TestGetHash_passwordEmpty()
-        {
-
-            Assert.Equal(PasswordHasher.GetHash("", null, 22), PasswordHasher.GetHash("", null, 22));
-
-        }
-
-        [Fact]
-        public void TestGetHash_passwordNull()
-        {
-            Assert.Equal(PasswordHasher.GetHash(null, null, 22), PasswordHasher.GetHash(null, null, 22));
-
-        }
 
         [Fact]
         public void TestInit_IfSalt_IsNull()
